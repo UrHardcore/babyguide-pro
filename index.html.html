@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BabyGuide Pro | Tu Asistente Pediátrico Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #92d1c3;
+            --primary-dark: #7abdaf;
+            --secondary: #f9b1b1;
+            --accent: #ffefba;
+            --text-dark: #4a4a4a;
+            --text-light: #7a7a7a;
+            --bg-soft: #fcfaf7;
+            --white: #ffffff;
+            --danger: #ff6b6b;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+            --radius: 20px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-soft);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- UI Components --- */
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--white);
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), #b8e2d9);
+            color: white;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+        }
+
+        header h1 { font-family: 'Nunito', sans-serif; font-size: 1.8rem; font-weight: 800; }
+        header p { font-size: 0.9rem; opacity: 0.9; }
+
+        /* --- Age Selector --- */
+        .age-control {
+            padding: 25px 20px;
+            margin-top: -30px;
+        }
+
+        .age-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .unit-switch {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .unit-btn {
+            border: 2px solid var(--primary);
+            background: transparent;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .unit-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--primary);
+            height: 8px;
+            cursor: pointer;
+        }
+
+        .age-display {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(146, 209, 195, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .analyze-btn:active { transform: scale(0.98); }
+
+        /* --- Dynamic Tabs --- */
+        .content-tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 20px;
+            gap: 10px;
+            scrollbar-width: none;
+        }
+        .content-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            white-space: nowrap;
+            padding: 10px 20px;
+            background: #eee;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* --- Content Sections --- */
+        .info-section {
+            padding: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .info-section.active { display: block; }
+
+        .card {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .card h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .alert-badge { background: #ffe5e5; color: var(--danger); }
+        .tip-badge { background: #e5f7f3; color: var(--primary-dark); }
+
+        /* --- Audio Simulator --- */
+        .audio-tool {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-soft);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 8px 0;
+        }
+
+        .play-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-container {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        .progress-track {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        /* --- Poop Color Palette --- */
+        .poop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .poop-item {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .color-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer-nav {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>BabyGuide Pro</h1>
+        <p>Expertos en el crecimiento de tu bebé</p>
+    </header>
+
+    <div class="age-control">
+        <div class="age-card">
+            <div class="unit-switch">
+                <button class="unit-btn active" onclick="setUnit('days')">Días</button>
+                <button class="unit-btn" onclick="setUnit('months')">Meses</button>
+                <button class="unit-btn" onclick="setUnit('years')">Años</button>
+            </div>
+            <div class="slider-container">
+                <input type="range" id="ageSlider" min="0" max="60" value="7" oninput="updateAgeDisplay()">
+            </div>
+            <div class="age-display" id="ageText">7 Días</div>
+            <button class="analyze-btn" onclick="analyzeDevelopment()">Analizar Desarrollo</button>
+        </div>
+    </div>
+
+    <div id="results" class="hidden">
+        <div class="progress-container">
+            <p style="font-size: 0.8rem; margin-bottom: 5px; font-weight: 600;">Progreso de Etapa</p>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="content-tabs">
+            <button class="tab-btn active" onclick="showTab('lactancia')">🍼 Alimentación</button>
+            <button class="tab-btn" onclick="showTab('desarrollo')">📈 Hitos</button>
+            <button class="tab-btn" onclick="showTab('sueno')">😴 Sueño</button>
+            <button class="tab-btn" onclick="showTab('salud')">🩺 Salud</button>
+            <button class="tab-btn" onclick="showTab('llanto')">🗣️ Sonidos</button>
+        </div>
+
+        <!-- SECCIÓN: ALIMENTACIÓN -->
+        <section id="lactancia" class="info-section active">
+            <div class="card">
+                <h3><span id="feedingTitle">Lactancia Materna</span></h3>
+                <p id="feedingFreq">Tu bebé debe comer entre 8 a 12 veces al día.</p>
+                <div class="tip-badge">Tip: El estómago es del tamaño de una cereza.</div>
+            </div>
+            <div class="card">
+                <h3>Reflujo y Gases</h3>
+                <p>Es común en esta etapa. Mantén al bebé vertical 20 min tras comer.</p>
+                <button class="analyze-btn" style="padding: 8px; font-size: 0.8rem; margin-top: 10px;" onclick="showTab('llanto')">Ver técnicas de masajes</button>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: DESARROLLO -->
+        <section id="desarrollo" class="info-section">
+            <div class="card">
+                <span class="badge tip-badge">Motor & Cognitivo</span>
+                <h3 id="milestoneTitle">Hitos Actuales</h3>
+                <ul id="milestoneList" style="padding-left: 20px;">
+                    <!-- Dinámico -->
+                </ul>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--danger);">
+                <h3 style="color: var(--danger);">🚨 Alertas</h3>
+                <p id="alertText">Consulta al pediatra si no reacciona a ruidos fuertes.</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: SUEÑO -->
+        <section id="sueno" class="info-section">
+            <div class="card">
+                <h3>Horas Sugeridas</h3>
+                <div class="age-display" style="font-size: 1.5rem;" id="sleepHours">16-18 horas</div>
+                <p>El sueño es fragmentado. No distinguen día de noche aún.</p>
+            </div>
+            <div class="card">
+                <h3>Rutina Recomendada</h3>
+                <p id="sleepRoutine">Baño tibio, luz tenue y ruido blanco ambiental.</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: SALUD -->
+        <section id="salud" class="info-section">
+            <div class="card">
+                <h3>Calendario de Vacunas</h3>
+                <p id="vaccineText">Corresponde: BCG y Hepatitis B (Recién nacido).</p>
+            </div>
+            <div class="card">
+                <h3>Guía de Pañal</h3>
+                <p>Colores de materia fecal:</p>
+                <div class="poop-grid">
+                    <div class="poop-item"><div class="color-circle" style="background: #222;"></div>Negro<br>(Mecónio)</div>
+                    <div class="poop-item"><div class="color-circle" style="background: #d4af37;"></div>Mostaza<br>(Normal)</div>
+                    <div class="poop-item"><div class="color-circle" style="background: #fff; border: 1px solid #ccc;"></div>Blanco<br>(ALERTA)</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Cordón Umbilical</h3>
+                <p id="umbilicalText">Limpiar solo con agua y jabón neutro. Caerá entre el día 7 y 15.</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: LLANTO -->
+        <section id="llanto" class="info-section">
+            <div class="card">
+                <span class="badge tip-badge">Método Dunstan</span>
+                <h3>Diccionario de Sonidos</h3>
+                <div class="audio-tool">
+                    <div><strong>"Neh"</strong> - Tengo Hambre</div>
+                    <button class="play-btn" onclick="playTone(440)">▶</button>
+                </div>
+                <div class="audio-tool">
+                    <div><strong>"Owh"</strong> - Tengo Sueño</div>
+                    <button class="play-btn" onclick="playTone(330)">▶</button>
+                </div>
+                <div class="audio-tool">
+                    <div><strong>"Eh"</strong> - Necesito eructar</div>
+                    <button class="play-btn" onclick="playTone(220)">▶</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Masajes para Gases</h3>
+                <p>Realiza movimientos de "bicicleta" con sus piernas suavemente y masajes circulares en sentido de las agujas del reloj.</p>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer-nav">
+        © 2024 BabyGuide Digital - Información basada en guías de la OMS. <br>
+        Consulte siempre a su pediatra de cabecera.
+    </footer>
+</div>
+
+<script>
+    let currentUnit = 'days';
+    const slider = document.getElementById('ageSlider');
+    const ageText = document.getElementById('ageText');
+
+    const config = {
+        days: { max: 60, label: 'Días' },
+        months: { max: 24, label: 'Meses' },
+        years: { max: 5, label: 'Años' }
+    };
+
+    function setUnit(unit) {
+        currentUnit = unit;
+        slider.max = config[unit].max;
+        slider.value = unit === 'days' ? 7 : 1;
+        
+        document.querySelectorAll('.unit-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.toLowerCase() === (unit === 'days' ? 'días' : unit === 'months' ? 'meses' : 'años')) {
+                btn.classList.add('active');
+            }
+        });
+        updateAgeDisplay();
+    }
+
+    function updateAgeDisplay() {
+        ageText.innerText = `${slider.value} ${config[currentUnit].label}`;
+    }
+
+    function showTab(tabId) {
+        document.querySelectorAll('.info-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function analyzeDevelopment() {
+        const val = parseInt(slider.value);
+        const results = document.getElementById('results');
+        results.classList.remove('hidden');
+        
+        // Update Progress Bar
+        const percent = (val / slider.max) * 100;
+        document.getElementById('progressBar').style.width = percent + '%';
+
+        // Logic Engine
+        const feedingTitle = document.getElementById('feedingTitle');
+        const feedingFreq = document.getElementById('feedingFreq');
+        const milestoneList = document.getElementById('milestoneList');
+        const sleepHours = document.getElementById('sleepHours');
+        const vaccineText = document.getElementById('vaccineText');
+
+        if (currentUnit === 'days') {
+            feedingTitle.innerText = "Lactancia Recién Nacido";
+            feedingFreq.innerText = "8 a 12 tomas diarias. Estómago muy pequeño (5-20ml).";
+            milestoneList.innerHTML = "<li>Reflejo de búsqueda activo</li><li>Fija la mirada a 20cm</li><li>Sobresalto ante ruidos</li>";
+            sleepHours.innerText = "16 - 18 Horas";
+            vaccineText.innerText = "BCG y Hepatitis B (Dosis de nacimiento).";
+            document.getElementById('umbilicalText').innerText = val < 15 ? "Limpieza con gasa seca. Vigilar que no huela mal." : "El cordón ya debería haber caído. Limpiar cicatriz.";
+        } 
+        else if (currentUnit === 'months') {
+            feedingTitle.innerText = val < 6 ? "Lactancia Exclusiva" : "Alimentación Complementaria";
+            feedingFreq.innerText = val < 6 ? "Tomas cada 3-4 horas." : "Introduce papillas suaves y sólidos (BLW).";
+            milestoneList.innerHTML = val < 4 ? "<li>Sostiene la cabeza</li><li>Sonrisa social</li>" : "<li>Se sienta con apoyo</li><li>Balbucea 'ba-ba'</li>";
+            sleepHours.innerText = "12 - 14 Horas";
+            vaccineText.innerText = val == 2 ? "Quíntuple, Polio, Rotavirus, Neumococo." : "Verificar esquema de 4 y 6 meses.";
+        } 
+        else {
+            feedingTitle.innerText = "Dieta Familiar";
+            feedingFreq.innerText = "4 comidas principales y 2 colaciones saludables.";
+            milestoneList.innerHTML = "<li>Corre y salta</li><li>Frases de 3 palabras</li><li>Inicia control de esfínteres</li>";
+            sleepHours.innerText = "10 - 12 Horas";
+            vaccineText.innerText = "Refuerzo escolar (5 años): Triple Viral, Triple Bacteriana, Polio.";
+        }
+
+        window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
+
+    // Audio Simulation (Vanilla Audio API)
+    function playTone(freq) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.1);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 1);
+    }
+</script>
+
+</body>
+</html>
