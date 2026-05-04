@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BabyAssist</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <!-- REGISTRO INICIAL -->
+    <section id="setup-screen" class="screen hidden">
+        <div class="card">
+            <h2>Perfil del Bebé</h2>
+            <input type="text" id="reg-name" placeholder="Nombre">
+            <input type="date" id="reg-dob">
+            <input type="time" id="reg-tob">
+            <input type="number" id="reg-weight" placeholder="Peso al nacer (kg)" step="0.1">
+            <button onclick="saveProfile()" class="btn-primary">Guardar Perfil</button>
+        </div>
+    </section>
+
+    <!-- APP PRINCIPAL -->
+    <main id="app-content" class="hidden">
+        
+        <!-- TAB: DASHBOARD -->
+        <section id="tab-home" class="tab-content">
+            <header class="hero-card">
+                <h1 id="dash-name">--</h1>
+                <div id="dash-age" class="age-badge">--</div>
+                <p id="dash-growth-status">Calculando crecimiento...</p>
+            </header>
+            
+            <div class="grid-2">
+                <div class="card info-card" onclick="switchTab('vacunas')">
+                    <span class="icon">💉</span>
+                    <h4>Vacunas</h4>
+                    <p id="alert-vac">Al día</p>
+                </div>
+                <div class="card info-card" onclick="switchTab('recordatorios')">
+                    <span class="icon">⏰</span>
+                    <h4>Alertas</h4>
+                    <p id="alert-rem">0 pendientes</p>
+                </div>
+            </div>
+
+            <div class="section-title">Consejo del día</div>
+            <div id="daily-tip" class="card tip-card">Cargando consejo...</div>
+        </section>
+
+        <!-- TAB: VACUNAS -->
+        <section id="tab-vacunas" class="tab-content hidden">
+            <div class="header-tab"><h2>Calendario</h2></div>
+            <div id="vaccine-list" class="list-container"></div>
+        </section>
+
+        <!-- TAB: SALUD (Historial + Crecimiento + Recordatorios) -->
+        <section id="tab-salud" class="tab-content hidden">
+            <div class="header-tab"><h2>Salud y Crecimiento</h2></div>
+            
+            <!-- Crecimiento -->
+            <div class="card">
+                <h3>Control de Peso/Talla</h3>
+                <div class="input-inline">
+                    <input type="number" id="weight-input" placeholder="Peso (kg)">
+                    <button onclick="addGrowth()">+</button>
+                </div>
+                <div id="growth-history"></div>
+            </div>
+
+            <!-- Historial Médico -->
+            <div class="card">
+                <h3>Historial Médico</h3>
+                <textarea id="med-desc" placeholder="Descripción de la visita..."></textarea>
+                <button onclick="addMedicalRecord()" class="btn-primary">Añadir Ficha</button>
+                <div id="medical-list"></div>
+            </div>
+        </section>
+
+        <!-- TAB: INFO (La enciclopedia) -->
+        <section id="tab-info" class="tab-content hidden">
+            <div class="header-tab"><h2>Guía de Cuidados</h2></div>
+            <div id="info-accordion" class="accordion"></div>
+        </section>
+
+        <!-- TAB: MI BEBÉ (Timeline) -->
+        <section id="tab-perfil" class="tab-content hidden">
+            <div class="header-tab"><h2>Mi Bebé</h2></div>
+            <div id="timeline" class="timeline"></div>
+        </section>
+
+    </main>
+
+    <!-- NAVEGACIÓN INFERIOR -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="switchTab('home')">🏠<span>Home</span></div>
+        <div class="nav-item" onclick="switchTab('vacunas')">💉<span>Vacunas</span></div>
+        <div class="nav-item" onclick="switchTab('salud')">🩺<span>Salud</span></div>
+        <div class="nav-item" onclick="switchTab('info')">📚<span>Guía</span></div>
+        <div class="nav-item" onclick="switchTab('perfil')">👶<span>Perfil</span></div>
+    </nav>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
